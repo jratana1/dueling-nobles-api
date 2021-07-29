@@ -5,10 +5,11 @@ class ChatMessageCreationEventBroadcastJob < ApplicationJob
 
       ActionCable
         .server
-        .broadcast(chat_message.room.name,
+        .broadcast("#{chat_message.room.name}_channel",
                    id: chat_message.id,
                    created_at: chat_message.created_at.strftime('%H:%M'),
                    content: chat_message.content,
+                   username: chat_message.user.username,
                    action: "chat")
     end
 
