@@ -1,10 +1,13 @@
 class GameChannel < ApplicationCable::Channel
   def subscribed
     # stream_from "game_channel"
-
-    stream_from "game_channel_#{uuid}"
-    Room.create(name: "game_channel_#{uuid}")
-    ActionCable.server.broadcast("game_channel_#{uuid}", action: 'subscribed', channel: "game_channel_#{uuid}")
+    if params[:room_id].present?
+      # creates a private chat room with a unique name
+      stream_from("game_channel_#{(params[:room_id])}")
+    end
+    # stream_from "game_channel_#{uuid}"
+    # Room.create(name: "game_channel_#{uuid}")
+    # ActionCable.server.broadcast("game_channel_#{uuid}", action: 'subscribed', channel: "game_channel_#{uuid}")
 
   end
 
