@@ -1,17 +1,23 @@
-class GameChannel < ApplicationCable::Channel
+class ChatChannel < ApplicationCable::Channel
   def subscribed
     # stream_from "game_channel"
     if params[:room_id].present?
       # creates a private chat room with a unique name
-      stream_from("game_channel_#{(params[:room_id])}")
+      room = Room.find(params[:room_id])
+      token = params[:jwt]
+      current_user = current_user(token)
+
+
+      stream_from("chat_channel_#{(params[:room_id])}")
     end
 
   end
 
-  def unsubscribed; end
+  def unsubscribed
+
+  end
 
   def speak(opts)
-
     token = opts.fetch('user')
     current_user = current_user(token)
 

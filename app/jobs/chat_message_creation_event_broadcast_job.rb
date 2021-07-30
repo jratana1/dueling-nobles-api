@@ -2,12 +2,7 @@ class ChatMessageCreationEventBroadcastJob < ApplicationJob
     queue_as :default
   
     def perform(chat_message)
-
-      if chat_message.room.name == "lobby"
-        channel = "lobby_channel"
-      else
-        channel = "game_channel_#{chat_message.room.id}"
-      end
+      channel = "chat_channel_#{chat_message.room.id}"
 
       ActionCable
         .server

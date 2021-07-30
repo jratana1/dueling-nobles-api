@@ -4,7 +4,7 @@ class RoomsController < ApplicationController
   
     # GET /rooms
     def index
-      rooms = Rooms.all
+      rooms = Room.all
   
       render json: rooms
     end
