@@ -5,19 +5,17 @@ class GameChannel < ApplicationCable::Channel
       # creates a private chat room with a unique name
       stream_from("game_channel_#{(params[:room_id])}")
     end
-    # stream_from "game_channel_#{uuid}"
-    # Room.create(name: "game_channel_#{uuid}")
-    # ActionCable.server.broadcast("game_channel_#{uuid}", action: 'subscribed', channel: "game_channel_#{uuid}")
 
   end
 
   def unsubscribed; end
 
-  def create(opts)
-    user = User.find_by(username: opts.fetch('user'))
-    room = Room.find_by(name: opts.fetch('room'))
+  def speak(opts)
 
-    ChatMessage.create(content: opts.fetch('content'), user_id: user.id, room_id:room.id)
+    token = opts.fetch('user')
+    current_user = current_user(token)
+
+    ChatMessage.create(content: opts.fetch('content'), user_id: current_user.id, room_id: opts.fetch('room_id'))
   end
 
   # def draw(opts) 

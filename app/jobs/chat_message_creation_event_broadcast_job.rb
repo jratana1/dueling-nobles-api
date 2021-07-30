@@ -3,9 +3,15 @@ class ChatMessageCreationEventBroadcastJob < ApplicationJob
   
     def perform(chat_message)
 
+      if chat_message.room.name == "lobby"
+        channel = "lobby_channel"
+      else
+        channel = "game_channel_#{chat_message.room.id}"
+      end
+
       ActionCable
         .server
-        .broadcast("#{chat_message.room.name}_channel",
+        .broadcast(channel,
                    id: chat_message.id,
                    created_at: chat_message.created_at.strftime('%H:%M'),
                    content: chat_message.content,
