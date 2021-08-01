@@ -16,10 +16,12 @@ class RoomsController < ApplicationController
   
     # POST /rooms
     def create
-  
+
         room_id = Room.last.id + 1
         room = Room.create(name: "Game Room #{room_id}")
+        game = Game.create(room_id: room.id)
         room.users << current_user
+
 
         render json: room 
 

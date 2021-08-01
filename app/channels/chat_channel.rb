@@ -1,6 +1,5 @@
 class ChatChannel < ApplicationCable::Channel
   def subscribed
-
     if params[:room_id].present?
       # creates a private chat room with a unique name
       room = Room.find(params[:room_id])
