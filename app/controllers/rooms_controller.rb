@@ -15,11 +15,16 @@ class RoomsController < ApplicationController
         player = game.player(current_user)
         opponent = game.opponent(current_user)
         
+
         if (game.player?(current_user))
+    
             render json: {room: @room, game: {playerHand: game.send("#{game.player(current_user)}_hand"), 
-                                              opponentHand: game.send("#{game.opponent(current_user)}_hand")},
+                                              opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
+                                              status: game.status,
+                                              turn: game.turn},
                                               players: {player1: game.player1.username, player2: game.player2.username}}
         else
+  
             if (game.player1 && game.player2)
               render json: {room: @room, game: game, players: {player1: game.player1.username, player2: game.player2.username}}
             elsif (@room.game.player1)
