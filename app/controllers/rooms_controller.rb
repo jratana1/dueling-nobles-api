@@ -11,7 +11,16 @@ class RoomsController < ApplicationController
   
     # GET /rooms/1
     def show
-      render json: @room
+      if (@room.game.player1 && @room.game.player2)
+        render json: {room: @room, game: @room.game, players: {player1: @room.game.player1.username, player2: @room.game.player2.username}}
+      elsif (@room.game.player1)
+        render json: {room: @room, game: @room.game, players: {player1: @room.game.player1.username, player2: ""}}
+      elsif (@room.game.player2)
+        render json: {room: @room, game: @room.game, players: {player1: "", player2: @room.game.player2.username}}
+      else
+        render json: {room: @room, game: @room.game, players: {player1: "", player2: ""}}
+      end
+
     end
   
     # POST /rooms
