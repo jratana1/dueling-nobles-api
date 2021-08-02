@@ -33,6 +33,10 @@ ActiveRecord::Schema.define(version: 2021_08_02_064902) do
     t.integer "room_id"
     t.string "status", default: "open"
     t.integer "turn", default: 0
+    t.integer "draw_pile", default: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51], null: false, array: true
+    t.integer "discard_pile", default: [], null: false, array: true
+    t.integer "player1_hand", default: [], null: false, array: true
+    t.integer "player2_hand", default: [], null: false, array: true
   end
 
   create_table "rooms", force: :cascade do |t|
