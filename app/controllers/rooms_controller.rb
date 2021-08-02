@@ -5,22 +5,31 @@ class RoomsController < ApplicationController
     # GET /rooms
     def index
       rooms = Room.all
-  
+
       render json: rooms
     end
   
     # GET /rooms/1
     def show
-      if (@room.game.player1 && @room.game.player2)
-        render json: {room: @room, game: @room.game, players: {player1: @room.game.player1.username, player2: @room.game.player2.username}}
-      elsif (@room.game.player1)
-        render json: {room: @room, game: @room.game, players: {player1: @room.game.player1.username, player2: ""}}
-      elsif (@room.game.player2)
-        render json: {room: @room, game: @room.game, players: {player1: "", player2: @room.game.player2.username}}
-      else
-        render json: {room: @room, game: @room.game, players: {player1: "", player2: ""}}
-      end
-
+        game =@room.game
+        player = game.player(current_user)
+        opponent = game.opponent(current_user)
+        
+        if (game.player?(current_user))
+            render json: {room: @room, game: {playerHand: game.send("#{game.player(current_user)}_hand"), 
+                                              opponentHand: game.send("#{game.opponent(current_user)}_hand")},
+                                              players: {player1: game.player1.username, player2: game.player2.username}}
+        else
+            if (game.player1 && game.player2)
+              render json: {room: @room, game: game, players: {player1: game.player1.username, player2: game.player2.username}}
+            elsif (@room.game.player1)
+              render json: {room: @room, game: game, players: {player1: game.player1.username, player2: ""}}
+            elsif (@room.game.player2)
+              render json: {room: @room, game: game, players: {player1: "", player2: @room.game.player2.username}}
+            else
+              render json: {room: @room, game: game, players: {player1: "", player2: ""}}
+            end
+        end
     end
   
     # POST /rooms
