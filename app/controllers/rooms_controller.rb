@@ -17,23 +17,63 @@ class RoomsController < ApplicationController
         
 
         if (game.player?(current_user))
-    
+
+              if (game.player1 && game.player2)
             render json: {room: @room, game: {playerHand: game.send("#{game.player(current_user)}_hand"), 
                                               opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
                                               discardPile: game.discard_pile,
                                               status: game.status,
                                               turn: game.turn},
                                               players: {player1: game.player1.username, player2: game.player2.username}}
+              elsif (@room.game.player1)
+               
+                render json: {room: @room, game: {playerHand: game.send("#{game.player(current_user)}_hand"), 
+                                              opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
+                                              discardPile: game.discard_pile,
+                                              status: game.status,
+                                              turn: game.turn},
+                                              players: {player1: game.player1.username, player2: ""}}
+              elsif (@room.game.player2)
+           
+                render json: {room: @room, game: {playerHand: game.send("#{game.player(current_user)}_hand"), 
+                opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
+                discardPile: game.discard_pile,
+                status: game.status,
+                turn: game.turn}, players: {player1: "", player2: @room.game.player2.username}}
+              else
+     
+                render json: {room: @room, game:  {playerHand: game.send("#{game.player(current_user)}_hand"), 
+                opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
+                discardPile: game.discard_pile,
+                status: game.status,
+                turn: game.turn}, players: {player1: "", player2: ""}}
+              end
         else
-  
+          
             if (game.player1 && game.player2)
-              render json: {room: @room, game: game, players: {player1: game.player1.username, player2: game.player2.username}}
+              render json: {room: @room, game:  {playerHand: game.player1_hand, 
+              opponentHand: game.player2_hand,
+              discardPile: game.discard_pile,
+              status: game.status,
+              turn: game.turn}, players: {player1: game.player1.username, player2: game.player2.username}}
             elsif (@room.game.player1)
-              render json: {room: @room, game: game, players: {player1: game.player1.username, player2: ""}}
+              render json: {room: @room, game: {playerHand: game.player1_hand, 
+              opponentHand: game&.player2_hand,
+              discardPile: game.discard_pile,
+              status: game.status,
+              turn: game.turn}, players: {player1: game.player1.username, player2: ""}}
             elsif (@room.game.player2)
-              render json: {room: @room, game: game, players: {player1: "", player2: @room.game.player2.username}}
+              render json: {room: @room, game: {playerHand: game&.player1_hand, 
+              opponentHand: game&.player2_hand,
+              discardPile: game.discard_pile,
+              status: game.status,
+              turn: game.turn}, players: {player1: "", player2: @room.game.player2.username}}
             else
-              render json: {room: @room, game: game, players: {player1: "", player2: ""}}
+              render json: {room: @room, game: {playerHand: game&.player1_hand, 
+              opponentHand: game&.player2_hand,
+              discardPile: game.discard_pile,
+              status: game.status,
+              turn: game.turn}, players: {player1: "", player2: ""}}
             end
         end
     end

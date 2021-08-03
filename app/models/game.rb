@@ -18,18 +18,19 @@ class Game < ApplicationRecord
   end
 
   def player(current_user)
-    (self.player1.id === current_user.id) ? "player1" : "player2"
+    
+    (self.player1&.id === current_user.id) ? "player1" : "player2"
   end
 
   def opponent(current_user)
-    (self.player1.id === current_user.id) ? "player2" : "player1"
+    (self.player1&.id === current_user.id) ? "player2" : "player1"
   end
 
   def player?(current_user)
-    (self.player1.id === current_user.id || self.player2.id === current_user.id) ? true : false
+    (self.player1&.id === current_user.id || self.player2&.id === current_user.id) ? true : false
   end
 
   def win?
-    
+
   end
 end
