@@ -2,7 +2,9 @@ class RoomCreationEventBroadcastJob < ApplicationJob
     queue_as :default
   
     def perform(room)
-      channel = "chat_channel_267"
+      lobby = Room.find_by(name: "lobby")
+
+      channel = "chat_channel_#{lobby.id}"
 
       ActionCable
         .server
