@@ -20,6 +20,7 @@ class RoomsController < ApplicationController
     
             render json: {room: @room, game: {playerHand: game.send("#{game.player(current_user)}_hand"), 
                                               opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
+                                              discardPile: game.discard_pile,
                                               status: game.status,
                                               turn: game.turn},
                                               players: {player1: game.player1.username, player2: game.player2.username}}

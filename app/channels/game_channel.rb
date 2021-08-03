@@ -53,23 +53,43 @@ class GameChannel < ApplicationCable::Channel
     # Any cleanup needed when channel is unsubscribed
   end
 
-  def draw
+  def draw(opts)
 
     game= Room.find(params[:room_id]).game
     token = params[:jwt]
     current_user = current_user(token)
+    card = opts.fetch('card')
 
-    card = game.draw_pile.pop()
-    game.send("#{game.player(current_user)}_hand") << card
-    game.turn = game.turn + 1
-    game.save
+
+    if (card["location"] == "drawPile")
+
+        card["card"]["image"]= game.draw_pile.pop()
+        game.send("#{game.player(current_user)}_hand") << card["card"]["image"]
+        game.turn = game.turn + 1
+        game.save
+
+    elsif (card["location"] == "playerHand")
+        if (game.player(current_user) == "player1")
+            updatedPlayerHand = game.send("#{game.player(current_user)}_hand") - [card["card"]["image"]]
+            game.discard_pile.push([card["card"]["image"]][0])
+            game.player1_hand = updatedPlayerHand
+      
+        elsif (game.player(current_user) == "player2")
+            updatedPlayerHand = game.send("#{game.player(current_user)}_hand") - [card["card"]["image"]]
+            game.discard_pile.push([card["card"]["image"]][0])
+            game.player2_hand = updatedPlayerHand
+        end
+        game.save
+    end
 
     ActionCable
     .server
     .broadcast("game_channel_#{game.id}_#{game.player(current_user)}",
               playerHand: game.send("#{game.player(current_user)}_hand"), 
               opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
+              discardPile: game.discard_pile,
               turn: game.turn,
+              card: card,
               player: "player",
               action: "drawing")
 
@@ -78,7 +98,9 @@ class GameChannel < ApplicationCable::Channel
     .broadcast("game_channel_#{game.id}_#{game.opponent(current_user)}",
                 playerHand: game.send("#{game.opponent(current_user)}_hand"), 
                 opponentHand: game.send("#{game.player(current_user)}_hand").length,
+                discardPile: game.discard_pile,
                 turn: game.turn,
+                card: card,
                 player: "opponent",
                 action: "drawing")
 
