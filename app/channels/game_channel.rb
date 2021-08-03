@@ -53,6 +53,34 @@ class GameChannel < ApplicationCable::Channel
     # Any cleanup needed when channel is unsubscribed
   end
 
-  def draw_card
+  def draw
+
+    game= Room.find(params[:room_id]).game
+    token = params[:jwt]
+    current_user = current_user(token)
+
+    card = game.draw_pile.pop()
+    game.send("#{game.player(current_user)}_hand") << card
+    game.turn = game.turn + 1
+    game.save
+
+    ActionCable
+    .server
+    .broadcast("game_channel_#{game.id}_#{game.player(current_user)}",
+              playerHand: game.send("#{game.player(current_user)}_hand"), 
+              opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
+              turn: game.turn,
+              player: "player",
+              action: "drawing")
+
+    ActionCable
+    .server
+    .broadcast("game_channel_#{game.id}_#{game.opponent(current_user)}",
+                playerHand: game.send("#{game.opponent(current_user)}_hand"), 
+                opponentHand: game.send("#{game.player(current_user)}_hand").length,
+                turn: game.turn,
+                player: "opponent",
+                action: "drawing")
+
   end
 end
