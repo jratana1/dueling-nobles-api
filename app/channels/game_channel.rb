@@ -80,6 +80,13 @@ class GameChannel < ApplicationCable::Channel
             game.player2_hand = updatedPlayerHand
         end
         game.save
+      
+    elsif (card["location"] == "discardPile")
+      newDiscardPile = game.discard_pile - [card["card"]["image"]]
+      game.discard_pile = newDiscardPile
+      game.send("#{game.player(current_user)}_hand") << card["card"]["image"]
+      game.save
+
     end
 
     ActionCable
