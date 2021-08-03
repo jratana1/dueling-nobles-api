@@ -28,4 +28,8 @@ class Game < ApplicationRecord
   def player?(current_user)
     (self.player1.id === current_user.id || self.player2.id === current_user.id) ? true : false
   end
+
+  def win?
+    
+  end
 end
