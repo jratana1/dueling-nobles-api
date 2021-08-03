@@ -69,6 +69,7 @@ class GameChannel < ApplicationCable::Channel
         game.save
 
     elsif (card["location"] == "playerHand")
+      game.turn = game.turn + 1
         if (game.player(current_user) == "player1")
             updatedPlayerHand = game.send("#{game.player(current_user)}_hand") - [card["card"]["image"]]
             game.discard_pile.push([card["card"]["image"]][0])
@@ -85,6 +86,7 @@ class GameChannel < ApplicationCable::Channel
       newDiscardPile = game.discard_pile - [card["card"]["image"]]
       game.discard_pile = newDiscardPile
       game.send("#{game.player(current_user)}_hand") << card["card"]["image"]
+      game.turn = game.turn + 1
       game.save
 
     end
