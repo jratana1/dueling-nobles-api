@@ -18,6 +18,17 @@ class GameChannel < ApplicationCable::Channel
    
             stream_from "game_channel_#{game.id}_#{game.player(current_user)}"
 
+            ActionCable
+            .server
+            .broadcast("game_channel_#{game.id}_#{game.player(current_user)}",
+                      playerHand: game.send("#{game.player(current_user)}_hand"), 
+                      opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
+                      status: game.status,
+                      turn: game.turn,
+                      seat: game.player(current_user),
+                      status: "playing",
+                      action: "dealing")
+
           elsif (game.status === "started") 
             game.status = "playing"
             game.save
@@ -31,6 +42,7 @@ class GameChannel < ApplicationCable::Channel
                       opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
                       status: game.status,
                       turn: game.turn,
+                      seat: game.opponent(current_user),
                       status: "playing",
                       action: "dealing")
 
@@ -41,6 +53,7 @@ class GameChannel < ApplicationCable::Channel
                         opponentHand: game.send("#{game.player(current_user)}_hand").length,
                         status: game.status,
                         turn: game.turn,
+                        seat: game.player(current_user),
                         status: "playing",
                         action: "dealing")
           else
@@ -62,11 +75,10 @@ class GameChannel < ApplicationCable::Channel
 
 
     if (card["location"] == "drawPile")
-
         card["card"]["image"]= game.draw_pile.pop()
         game.send("#{game.player(current_user)}_hand") << card["card"]["image"]
         game.turn = game.turn + 1
-        game.save
+
 
     elsif (card["location"] == "playerHand")
       game.turn = game.turn + 1
@@ -80,17 +92,15 @@ class GameChannel < ApplicationCable::Channel
             game.discard_pile.push([card["card"]["image"]][0])
             game.player2_hand = updatedPlayerHand
         end
-        game.save
+
       
     elsif (card["location"] == "discardPile")
       newDiscardPile = game.discard_pile - [card["card"]["image"]]
       game.discard_pile = newDiscardPile
       game.send("#{game.player(current_user)}_hand") << card["card"]["image"]
       game.turn = game.turn + 1
-      game.save
-
     end
-
+    game.save
     ActionCable
     .server
     .broadcast("game_channel_#{game.id}_#{game.player(current_user)}",

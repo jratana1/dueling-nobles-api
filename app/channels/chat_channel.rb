@@ -34,7 +34,9 @@ class ChatChannel < ApplicationCable::Channel
     elsif (game.player1)
       game.player2 = current_user
 
-      ActionCable.server.broadcast("chat_channel_#{(params[:room_id])}", {players: {player1: game.player1.username, player2: game.player2.username}, action: "join" })
+      ActionCable.server.broadcast("chat_channel_#{(params[:room_id])}",
+                                    {players: {player1: game.player1.username, player2: game.player2.username},
+                                    action: "join" })
     elsif (game.player2)
       game.player1 = current_user
 
