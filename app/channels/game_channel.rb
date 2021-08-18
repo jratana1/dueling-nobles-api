@@ -42,7 +42,7 @@ class GameChannel < ApplicationCable::Channel
                       opponentHand: game.send("#{game.opponent(current_user)}_hand").length,
                       status: game.status,
                       turn: game.turn,
-                      seat: game.opponent(current_user),
+                      seat: game.player(current_user),
                       status: "playing",
                       action: "dealing")
 
@@ -53,7 +53,7 @@ class GameChannel < ApplicationCable::Channel
                         opponentHand: game.send("#{game.player(current_user)}_hand").length,
                         status: game.status,
                         turn: game.turn,
-                        seat: game.player(current_user),
+                        seat: game.opponent(current_user),
                         status: "playing",
                         action: "dealing")
           else
